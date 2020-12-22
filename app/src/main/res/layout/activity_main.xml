@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/open_ble"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="打开蓝牙"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/close_ble"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="关闭蓝牙"
+        tools:ignore="HardcodedText" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/shebei"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:text="扫描特定UUId的设备" />
+        <Button
+            android:id="@+id/start_bluetooth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:text="开始扫描" />
+
+        <Button
+            android:id="@+id/stop_bluetooth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="停止扫描" />
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="蓝牙设备的连接状态，可以使用两部手机进行试验，先对两部手机进行配对，然后再
+进行手动连接，就会显示连接状态！"
+        android:textSize="20dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+</LinearLayout>

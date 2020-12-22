@@ -1,0 +1,121 @@
+普通蓝牙设备官方文档
+Android 平台包含蓝牙网络堆栈支持，凭借此支持，设备能以无线方式与其他蓝牙设备交换数据。
+应用框架提供了通过 Android Bluetooth API 访问蓝牙功能的途径。使用 Bluetooth API Android
+应用可以执行下面的操作：
+
+        扫描其他蓝牙设备
+        查询本地蓝牙适配器的配对蓝牙设备
+        建立 RFCOMM 通道
+        通过服务发现连接到其他设备
+        与其他设备进行双向数据传输
+        管理多个连接
+
+传统蓝牙适用于电池使用强度较大的操作，例如 Android 设备之间的流传输和通信等。
+针对具有低功耗要求的蓝牙设备，Android 4.3（API 18）中引入了面向低功耗蓝牙的 API 支持。
+
+
+基础知识
+使用 Android Bluetooth API 来完成使用蓝牙进行通信的四项主要任务：设置蓝牙、查找局部区域内的配对设备或可用设备、
+连接设备，以及在设备之间传输数据。
+
+关于蓝牙的 API 在 android.bluetooth 包中，下面介绍一下和蓝牙相关的主要类
+
+BluetoothAdapter
+
+本地蓝牙适配器，是所有蓝牙交互的入口点，表示蓝牙设备自身的一个蓝牙设备适配器，整个系统只有一个蓝牙适配器。
+通过它可以发现其他蓝牙设备，查询绑定（配对）设备的列表，使用已知的 Mac 地址实例化 BluetoothDevice 以及创建
+BluetoothServerSocket 用来侦听来自其他设备的通信。
+
+BluetoothDevice
+
+表示远程的蓝牙设备。利用它可以通过 BluetoothSocket 请求与某个远程设备建立连接，或查询有关该设备的信息，
+例如设备的名称、地址、类和绑定状态等。
+
+BluetoothSocket
+
+表示蓝牙套接字接口（与 TCP Socket 相似）。这是允许应用通过 InputStream 和 OutputStream 与其他蓝牙设备交换数据的节点。
+正是利用这个对象来完成蓝牙设备间的数据交换，
+
+
+
+BluetoothServerSocket
+
+表示用于侦听传入请求的开发服务器套接字（类似于 TCP ServerSocket）要连接两台 Android 设备，
+其中一台设备必须使用此类开发的一个服务器套接字。当一台远程蓝牙设备向此设备发出连接请求时，
+BluetoothServerSocket 将会在接受连接后返回已连接的 BluethoothSocket。
+
+
+BluetoothClass
+描述蓝牙设备的一般特性和功能。这是一组只读属性，用于定义设备的主要和次要设备类及其服务。
+不过，它不能可靠地描述设备支持的所有蓝牙配置文件和服务，而是适合作为设备类型提示。
+
+BluetoothProfile
+表示蓝牙配置文件的接口。蓝牙配置文件是适用于设备间蓝牙通信的无线接口规范。
+免提配置文件便是一个示例。如需了解关于配置文件的详细讨论，参考下面配置文件的讲解
+
+BluetoothHeadset
+
+提供蓝牙耳机支持，以便与手机配合使用。其中包括蓝牙耳机和免提（1.5版）配置文件。
+BluetoothProfile 的实现类
+
+BlutoothA2dp
+定义高质量音频如何通过蓝牙连接和流式传输，从一台设备传输到另一台设备。“A2DP”代表高级音频分发配置文件。
+是 BluetoothProfile 的实现类
+
+BluetoothHealth
+表示用于控制蓝牙服务的健康设备配置文件代理。 BluetoothProfile 的实现类。
+
+BluetoothGatt
+
+BluetoothProfile 的实现类。与低功耗蓝牙通信有关的配置文件代理
+
+BluetoothHealthCallback
+用于实现 BluetoothHealth 回调的抽象类。必须扩展此类并实现回调方法，以接收关于应用注册状态和蓝牙通道状态变化的更新内容。
+
+BluetoothHealthAppConfiguration
+表示第三方蓝牙健康应用注册的应用配置，以便与远程蓝牙健康设备通信
+
+BluetoothProfile.ServiceListener
+在 BluetoothProfile IPC 客户端连接到服务（即，运行特定配置文件的内部服务）或断开服务连接时向其发送通知的接口。
+
+
+第一步申请权限
+
+ <mainifest>
+    <uses-permission android:name = "android.permission.BLUETOOTH"/>
+    <!--启用应用启动设备发现或者操作蓝牙设备的超级管理员-->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+</mainifest>
+
+
+第二部设置蓝牙以及蓝牙适配器
+获取蓝牙适配器
+  1  所有的蓝牙 Activity 都是需要 BluetoothAdapter 的。
+    获取 BluetoothAdapter 调用 BluetoothAdapter 的静态方法 getDefaultAdapter() 方法。
+    会返回一个表示设备自身的蓝牙适配器（蓝牙无线装置）的 BluetoothAdapter。
+    整个系统有一个蓝牙适配器，我们的应用可以通过 BluetoothAdapter 这个对象与之交互。
+    如果 getDefaultAdapter()返回 null 则说明该设备不支持蓝牙
+
+    BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    if(mBluetoothAdapter == null){
+        // 说明此设备不支持蓝牙操作
+    }
+   2 启用蓝牙
+    需要确认是否已经开启蓝牙isEnabled()。返回 false 则说明蓝牙处于关闭状态。请求启用蓝牙。
+    使用 ACTION_REQUEST_ENABLE 操作 Intent 调用 startActivityForResult()将通过系统设置发出启用蓝牙的请求。
+    也可以通过 mBluetoothAdapter.enable() 直接打开蓝牙。
+
+    // 没有开始蓝牙
+   if(!mBluetoothAdapter.isEnabled()){
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(enableBtIntent,REQUEST_ENBLE_BT);
+   }
+    我们的应用也可以选择侦听 ACTION_STATE_CHANGED 广播 Intent。
+    每当蓝牙状态发生变化时，系统会广播此 Intent。
+    此广播包含额外字段 EXTRA_STATE 和 EXTRA_PREVIOUS_STATE 分别表示新的和旧的蓝牙状态。
+
+
+
+
+
+

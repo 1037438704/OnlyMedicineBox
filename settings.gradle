@@ -1,0 +1,3 @@
+include ':smartkitlibe'
+include ':app'
+rootProject.name = "OnlyMedicineBox"
