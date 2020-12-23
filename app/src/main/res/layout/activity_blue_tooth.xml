@@ -5,89 +5,136 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".aty.BlueToothActivity">
+    tools:context=".MainActivity">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/is_support_blue_tooth"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:onClick="isSupportBlueTooth"
-            android:text="是否支持蓝牙"
-            tools:ignore="OnClick" />
 
-        <Button
-            android:id="@+id/is_blue_tooth_enable"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:onClick="isBlueToothEnable"
-            android:text="蓝牙是否打开"
-            tools:ignore="OnClick" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/turn_on_blue_tooth"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:onClick="turnOnBlueTooth"
-            android:text="打开蓝牙"
-            tools:ignore="OnClick" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/turn_off_blue_tooth"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:onClick="turnOffBlueTooth"
-            android:text="关闭蓝牙"
-            tools:ignore="OnClick" />
+                <Button
+                    android:id="@+id/is_support_blue_tooth"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:onClick="isSupportBlueTooth"
+                    android:text="是否支持蓝牙"
+                    tools:ignore="OnClick" />
 
-        <Button
-            android:id="@+id/start_bluetooth"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1"
-            android:onClick="startBluetooth"
-            android:text="开始扫描"
-            tools:ignore="OnClick" />
+                <Button
+                    android:id="@+id/is_blue_tooth_enable"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:onClick="isBlueToothEnable"
+                    android:text="蓝牙是否打开"
+                    tools:ignore="OnClick" />
 
-        <Button
-            android:id="@+id/see_bluetooth"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1"
-            android:onClick="seeBluetooth"
-            android:text="查看连接的"
-            tools:ignore="OnClick" />
+                <Button
+                    android:id="@+id/turn_on_blue_tooth"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:onClick="turnOnBlueTooth"
+                    android:text="打开蓝牙"
+                    tools:ignore="OnClick" />
 
-    </LinearLayout>
+                <Button
+                    android:id="@+id/turn_off_blue_tooth"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:onClick="turnOffBlueTooth"
+                    android:text="关闭蓝牙"
+                    tools:ignore="OnClick" />
 
-    <Button
-        android:id="@+id/binding_one"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="bindingOne"
-        android:text="查看连接的"
-        tools:ignore="OnClick" />
-    <TextView
-        android:id="@+id/text_one_bind"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="第一次绑定返回的数据"
-        />
+                <Button
+                    android:id="@+id/start_bluetooth"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:onClick="startBluetooth"
+                    android:text="开始扫描"
+                    tools:ignore="OnClick" />
+
+                <Button
+                    android:id="@+id/see_bluetooth"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:onClick="seeBluetooth"
+                    android:text="查看连接的"
+                    tools:ignore="OnClick" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/binding_one"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="bindingOne"
+                android:text="初次绑定指令一"
+                tools:ignore="OnClick" />
+
+            <TextView
+                android:id="@+id/text_one_bind"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="第一次绑定返回的数据" />
+
+            <Button
+                android:id="@+id/binding_two"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="bindingTwo"
+                android:text="绑定结束获取信息指令三"
+                tools:ignore="OnClick" />
+
+            <TextView
+                android:id="@+id/text_two_bind"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="第一次绑定返回的数据" />
+
+            <Button
+                android:id="@+id/looking_for_the_kit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="lookingForTheKit"
+                android:text="寻找药盒"
+                tools:ignore="OnClick" />
+
+
+            <TextView
+                android:id="@+id/text_looking_for_the_kit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="第一次绑定返回的数据" />
+
+
+        </LinearLayout>
+
+    </ScrollView>
 
 
 </LinearLayout>

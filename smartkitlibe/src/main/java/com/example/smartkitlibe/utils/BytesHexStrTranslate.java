@@ -1,7 +1,5 @@
 package com.example.smartkitlibe.utils;
 
-import android.util.Log;
-
 public class BytesHexStrTranslate {
 
     private static final char[] HEX_CHAR = {'0', '1', '2', '3', '4', '5',

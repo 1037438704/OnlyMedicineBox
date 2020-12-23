@@ -1,5 +1,6 @@
 package com.example.smartkitlibe.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -46,6 +47,7 @@ public class BlueToothController {
     /**
      * 扫描指定的
      */
+    @SuppressLint("MissingPermission")
     public void findUUIDDevice(UUID[] uuids, BluetoothAdapter.LeScanCallback mLeScanCallback) {
         assert (mAdapter != null);
         mAdapter.startLeScan(uuids, mLeScanCallback);
@@ -54,12 +56,14 @@ public class BlueToothController {
     /**
      * 关闭蓝牙
      */
+    @SuppressLint("MissingPermission")
     public void turnOffBlueTooth() {
         mAdapter.disable();
     }
     /**
      * 停止扫描
      */
+    @SuppressLint("MissingPermission")
     public void cancelDiscovery() {
         assert (mAdapter != null);
         mAdapter.cancelDiscovery();
@@ -68,11 +72,13 @@ public class BlueToothController {
     /**
      * 查找设备
      */
+    @SuppressLint("MissingPermission")
     public void findDevice() {
         assert (mAdapter != null);
         mAdapter.startDiscovery();
     }
 
+    @SuppressLint("MissingPermission")
     public void outSearchBlueTooth() {
         mAdapter.cancelDiscovery();
     }
