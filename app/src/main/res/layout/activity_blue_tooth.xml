@@ -61,6 +61,7 @@
             android:onClick="startBluetooth"
             android:text="开始扫描"
             tools:ignore="OnClick" />
+
         <Button
             android:id="@+id/see_bluetooth"
             android:layout_width="0dp"
@@ -73,9 +74,20 @@
 
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <Button
+        android:id="@+id/binding_one"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:onClick="bindingOne"
+        android:text="查看连接的"
+        tools:ignore="OnClick" />
+    <TextView
+        android:id="@+id/text_one_bind"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="第一次绑定返回的数据"
+        />
+
 
 </LinearLayout>

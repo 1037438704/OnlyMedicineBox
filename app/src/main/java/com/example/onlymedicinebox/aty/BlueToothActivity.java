@@ -1,14 +1,9 @@
 package com.example.onlymedicinebox.aty;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,18 +13,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.listener.OnItemClickListener;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.onlymedicinebox.R;
 import com.example.onlymedicinebox.adapter.BluetoothAdp;
-import com.example.onlymedicinebox.receiver.BluetoothMonitorReceiver;
-import com.example.onlymedicinebox.utils.BlueToothController;
-
+import com.example.smartkitlibe.utils.BlueToothController;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +36,8 @@ public class BlueToothActivity extends AppCompatActivity {
     //列表适配器
     BluetoothAdp bluetoothAdp;
     RecyclerView recyclerView;
+    private TextView text_one_bind;
+    int getSwitch =0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +86,7 @@ public class BlueToothActivity extends AppCompatActivity {
 
     private void initView() {
         mController = new BlueToothController();
+        text_one_bind = findViewById(R.id.text_one_bind);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         //初始化适配器
@@ -312,6 +308,12 @@ public class BlueToothActivity extends AppCompatActivity {
     };
     //查看连接的
     public void seeBluetooth(View view) {
+
+    }
+
+    private BluetoothGatt bluetoothGatt;
+    //第一次绑定
+    public void bindingOne(View view) {
 
     }
 }

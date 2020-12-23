@@ -1,4 +1,4 @@
-package com.example.onlymedicinebox.service;
+package com.example.smartkitlibe.service;
 
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
