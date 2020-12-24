@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.smartkitlibe.Configure;
 import com.example.smartkitlibe.instructions.Instructions;
 import com.example.smartkitlibe.utils.BlueToothController;
+import com.example.smartkitlibe.utils.BluetoothGattController;
 import com.example.smartkitlibe.utils.BytesHexStrTranslate;
 
 import java.math.BigInteger;
@@ -35,118 +36,13 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_CODE = 0;
+    private static final String ACTION_RECEIVE_MESSAGE = "laya";
     private Toast mToast;
     private BlueToothController mController;
     private String TAB = "zdl";
-    private Instructions instructions;
-    private BytesHexStrTranslate bytesHexStrTranslate;
+    private BluetoothGattController bluetoothGattController;
     private TextView text_one_bind, text_two_bind, text_looking_for_the_kit;
     int getSwitch = 0;
-    private BluetoothGatt bluetoothGatt;
-    private BluetoothGattService bluetoothGattService;
-    private BluetoothGattCharacteristic writeCharacteristic;
-    private BluetoothGattCharacteristic notifyCharacteristic;
-
-
-    private BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
-
-        //更新
-        @Override
-        public void onPhyUpdate(BluetoothGatt gatt, int txPhy, int rxPhy, int status) {
-            super.onPhyUpdate(gatt, txPhy, rxPhy, status);
-            Log.d(TAB, "=======onPhyUpdate=========");
-        }
-
-
-        //读入
-        @Override
-        public void onPhyRead(BluetoothGatt gatt, int txPhy, int rxPhy, int status) {
-            super.onPhyRead(gatt, txPhy, rxPhy, status);
-            Log.d(TAB, "=======onPhyRead=========");
-
-        }
-
-        @Override
-        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            super.onConnectionStateChange(gatt, status, newState);
-            //连接状态更改
-            if (newState == BluetoothProfile.STATE_CONNECTED) {
-                gatt.discoverServices();
-                Log.d("onConnectionStateChange", "连接成功");
-            } else {
-                Log.d("onConnectionStateChange", "连接断开");
-            }
-        }
-
-        @Override
-        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            super.onServicesDiscovered(gatt, status);
-            //服务
-            Log.d("onServicesDiscovered", "写入成功");
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                List<BluetoothGattService> supportedGattServices = gatt.getServices();
-                for (int i = 0; i < supportedGattServices.size(); i++) {
-                    Log.i("success", "1:BluetoothGattService UUID=:" + supportedGattServices.get(i).getUuid());
-                    List<BluetoothGattCharacteristic> listGattCharacteristic = supportedGattServices.get(i).getCharacteristics();
-                    for (int j = 0; j < listGattCharacteristic.size(); j++) {
-                        Log.i("success", "2:   BluetoothGattCharacteristic UUID=:" + listGattCharacteristic.get(j).getUuid());
-                    }
-                }
-            } else {
-                Log.e("fail", "onservicesdiscovered收到: " + status);
-            }
-            //设置serviceUUID,原型是：BluetoothGattService bluetoothGattService = bluetoothGatt.getService(UUID.fromString(SERVICESUUID));
-            bluetoothGattService = gatt.getService(UUID.fromString(Configure.SPP_UUID));
-            //设置写入特征UUID,原型是：BluetoothGattCharacteristic writeCharacteristic = bluetoothGattService.getCharacteristic(UUID.fromString(WRITEUUID));
-            writeCharacteristic = bluetoothGattService.getCharacteristic(UUID.fromString(Configure.WRITE_UUID));
-            //设置监听特征UUID,原型是：BluetoothGattCharacteristic notifyCharacteristic = bluetoothGattService.getCharacteristic(UUID.fromString(NOTIFYUUID));
-            notifyCharacteristic = bluetoothGattService.getCharacteristic(UUID.fromString(Configure.NOTICE_UUID));
-            //开启监听
-            boolean b1 = gatt.setCharacteristicNotification(notifyCharacteristic, true);
-            if (b1) {
-                List<BluetoothGattDescriptor> descriptors = notifyCharacteristic.getDescriptors();
-                if (descriptors != null && descriptors.size() > 0) {
-                    for (BluetoothGattDescriptor descriptor : descriptors) {
-                        descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                        gatt.writeDescriptor(descriptor);
-                    }
-                }
-            }
-            Toast.makeText(MainActivity.this, "连接成功", Toast.LENGTH_SHORT).show();
-            Log.d("uuidconnectsuccess", "uuid连接成功==b1==" + b1);
-        }
-
-        @Override
-        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            super.onCharacteristicRead(gatt, characteristic, status);
-            Log.d(TAB, "onCharacteristicRead");
-        }
-
-        @Override
-        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            super.onCharacteristicWrite(gatt, characteristic, status);
-            //第一步   写入成功了
-            byte[] value = characteristic.getValue();
-            Log.e(TAB, "=====点击的数据======" + bytesHexStrTranslate.bytesToHexFun1(value));
-
-        }
-
-        //接受数据回调
-        @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            super.onCharacteristicChanged(gatt, characteristic);
-            byte[] value = characteristic.getValue();
-            Log.e("ReceiveSuccess", bytesHexStrTranslate.bytesToHexFun1(value));
-            Message msg = new Message();
-            Bundle data = new Bundle();
-            //将获取到的String装载到msg中
-            data.putString("value", bytesHexStrTranslate.bytesToHexFun1(value));
-            msg.setData(data);
-            msg.what = 1;
-            //发消息到主线程
-            handler.sendMessage(msg);
-        }
-    };
 
     //转到主线程进行交互 子线程无法修改UI
     @SuppressLint("HandlerLeak")
@@ -174,10 +70,6 @@ public class MainActivity extends AppCompatActivity {
                         //寻找药盒
                         text_looking_for_the_kit.setText(val);
                         break;
-                    case 3:
-                        //停止提醒
-                        text_looking_for_the_kit.setText(val);
-                        break;
                     default:
                         Toast.makeText(MainActivity.this, "暂无此功能", Toast.LENGTH_SHORT).show();
                 }
@@ -196,20 +88,15 @@ public class MainActivity extends AppCompatActivity {
         initView();
         // 广播监听
         registerBluetoothReceiver();
-        //点击事件
-        initEvent();
-    }
-
-    private void initEvent() {
     }
 
     private void initView() {
-        instructions = new Instructions();
         mController = new BlueToothController();
         text_one_bind = findViewById(R.id.text_one_bind);
         text_two_bind = findViewById(R.id.text_two_bind);
         text_looking_for_the_kit = findViewById(R.id.text_looking_for_the_kit);
     }
+
 
 
     //查找设备
@@ -223,56 +110,16 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                //setProgressBarIndeterminateVisibility(true);
-                //初始化数据列表
-            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                setProgressBarIndeterminateVisibility(false);
-            } else if (BluetoothDevice.ACTION_FOUND.equals(action) || BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+            if (BluetoothDevice.ACTION_FOUND.equals(action) || BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (device.getName() != null) {
                     Log.d(TAB, "======" + device.getName());
                     if (device.getName().equalsIgnoreCase("PB1-CE1BDF")) {
                         // 搜索蓝牙设备的过程占用资源比较多，一旦找到需要连接的设备后需要及时关闭搜索
                         mController.outSearchBlueTooth();
-//                        device.getBondState();
                         // 状态改变的广播
-                        bluetoothGatt = device.connectGatt(context, false, bluetoothGattCallback);
-                        if (bluetoothGatt.connect()) {
-                            Log.d(">>>蓝牙连接", "成功");
-                            if (bluetoothGatt.discoverServices()) {
-                                Log.d(">>>蓝牙连接", "==discoverServices已经开始了");
-                            } else {
-                                Log.d(">>>蓝牙连接", "==discoverServices没有开始");
-                            }
-                        } else {
-                            Log.d(">>>蓝牙连接", "==失败");
-                        }
-
+                        bluetoothGattController = new BluetoothGattController(device, context);
                     }
-                }
-
-            } else if (BluetoothAdapter.ACTION_SCAN_MODE_CHANGED.equals(action)) {  //此处作用待细查
-                int scanMode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, 0);
-                if (scanMode == BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-                    setProgressBarIndeterminateVisibility(true);
-                } else {
-                    setProgressBarIndeterminateVisibility(false);
-                }
-
-            } else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
-                BluetoothDevice remoteDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (remoteDevice == null) {
-                    showToast("无设备");
-                    return;
-                }
-                int status = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, 0);
-                if (status == BluetoothDevice.BOND_BONDED) {
-                    showToast("已绑定" + remoteDevice.getName());
-                } else if (status == BluetoothDevice.BOND_BONDING) {
-                    showToast("正在绑定" + remoteDevice.getName());
-                } else if (status == BluetoothDevice.BOND_NONE) {
-                    showToast("未绑定" + remoteDevice.getName());
                 }
             }
         }
@@ -292,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
         filter.addAction(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
         //绑定状态
         filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-
         registerReceiver(receiver, filter);
 
         //软件运行时直接申请打开蓝牙
@@ -327,24 +173,24 @@ public class MainActivity extends AppCompatActivity {
 
     //第一次绑定
     public void bindingOne(View view) {
-        if (writeCharacteristic == null) {
+        if (bluetoothGattController == null){
+
             return;
         }
-        writeCharacteristic.setValue(instructions.getBindRequestOne());
-        writeCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-        bluetoothGatt.writeCharacteristic(writeCharacteristic);
+        bluetoothGattController.getBindRequest();
         getSwitch = 0;
     }
 
     //第二次交互
     public void bindingTwo(View view) {
-        if (writeCharacteristic == null) {
-            return;
-        }
-        writeCharacteristic.setValue(instructions.getBindRequestThree());
-        writeCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-        bluetoothGatt.writeCharacteristic(writeCharacteristic);
+        bluetoothGattController.getBindingSuccessFeedback();
         getSwitch = 1;
+    }
+
+    //寻找药盒
+    public void lookingForTheKit(View view) {
+        bluetoothGattController.getLookingForTheKit();
+        getSwitch = 2;
     }
 
     //回调
@@ -367,15 +213,6 @@ public class MainActivity extends AppCompatActivity {
         mToast.show();
     }
 
-    //寻找药盒
-    public void lookingForTheKit(View view) {
-        if (writeCharacteristic == null) {
-            return;
-        }
-        writeCharacteristic.setValue(instructions.getLookingForTheKit());
-        writeCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-        bluetoothGatt.writeCharacteristic(writeCharacteristic);
-        getSwitch = 2;
-    }
+
 }
 

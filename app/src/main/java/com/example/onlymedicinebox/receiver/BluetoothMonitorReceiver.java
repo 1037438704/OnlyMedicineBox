@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 public class BluetoothMonitorReceiver extends BroadcastReceiver {
+
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
